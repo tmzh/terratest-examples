@@ -22,7 +22,7 @@ resource "aws_lambda_function" "lambda" {
   source_code_hash = data.archive_file.zip.output_base64sha256
   function_name    = var.function_name
   role             = aws_iam_role.lambda.arn
-  handler          = "lambda"
+  handler          = "handler"
   runtime          = "go1.x"
 }
 
@@ -39,4 +39,42 @@ data "aws_iam_policy_document" "policy" {
       identifiers = ["lambda.amazonaws.com"]
     }
   }
+}
+
+resource "aws_cloudwatch_log_group" "example" {
+  name              = "/aws/lambda/${aws_lambda_function.lambda.id}"
+  retention_in_days = 14
+}
+
+# See also the following AWS managed policy: AWSLambdaBasicExecutionRole
+resource "aws_iam_policy" "lambda_logging" {
+  name        = "lambda_logging"
+  path        = "/"
+  description = "IAM policy for logging from a lambda"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.lambda_logging.arn
+}
+
+output "lambda_function" {
+	value = aws_lambda_function.lambda.id
 }

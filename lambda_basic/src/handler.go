@@ -7,8 +7,13 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func HandleRequest(ctx context.Context, name string) (string, error) {
-	return fmt.Sprintf("Hello %s", name), fmt.Errorf("Failed to handle %#v", evnt)
+type Event struct {
+	Name string `json:"Name"`
+}
+
+func HandleRequest(ctx context.Context, evnt Event) (string, error) {
+	fmt.Println("%#v", evnt)
+	return fmt.Sprintf("Hello %s!", evnt.Name), nil
 }
 
 func main() {
