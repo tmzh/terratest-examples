@@ -12,7 +12,6 @@ type Event struct {
 }
 
 func HandleRequest(ctx context.Context, evnt Event) (string, error) {
-	fmt.Println("%#v", evnt)
 	return fmt.Sprintf("Hello %s!", evnt.Name), nil
 }
 

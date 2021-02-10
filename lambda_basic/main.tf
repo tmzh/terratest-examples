@@ -41,11 +41,6 @@ data "aws_iam_policy_document" "policy" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "example" {
-  name              = "/aws/lambda/${aws_lambda_function.lambda.id}"
-  retention_in_days = 14
-}
-
 # See also the following AWS managed policy: AWSLambdaBasicExecutionRole
 resource "aws_iam_policy" "lambda_logging" {
   name        = "lambda_logging"
