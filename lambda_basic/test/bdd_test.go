@@ -8,14 +8,9 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 
-	//	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
-
-type Payload struct {
-	Name string
-}
 
 type testingSuite struct {
 	testing *testing.T
@@ -67,21 +62,23 @@ func (o *godogFeaturesScenario) terraformIsDeployedWithVariables(tbl *godog.Tabl
 
 	awsRegion := "us-east-1"
 
-	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+	terraformOptions := terraform.WithDefaultRetryableErrors(o.testing, &terraform.Options{
 		TerraformDir: "..",
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
 	})
 
-	terraform.InitAndApply(t, terraformOptions)
-	functionName := terraform.Output(t, terraformOptions, "lambda_function")
+	o.terraformOptions = terraformOptions
+
+	terraform.InitAndApply(o.testing, terraformOptions)
+	functionName := terraform.Output(o.testing, terraformOptions, "lambda_function")
 
 	// Invoke the function, so we can test its output
-	response := aws.InvokeFunction(t, awsRegion, functionName, Payload{Name: "World"})
+	response := aws.InvokeFunction(o.testing, awsRegion, functionName, Payload{Name: "World"})
 
-	assert.Equal(t, `"Hello World!"`, string(response))
-
+	assert.Equal(o.testing, `"Hello World!"`, string(response))
+	return nil
 }
 
 func (o *godogFeaturesScenario) destroyTerraform(sc *godog.Scenario, err error) {
