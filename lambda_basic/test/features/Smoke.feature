@@ -5,6 +5,5 @@ Feature: Simple test to confirm lambda function behavior
 	Scenario: Deploy a Lambda function
 		Given Terraform code is deployed with these variables:
 			|function_name | random_name|
-		When Lambda function is invoked the following input:
-			|function_name | random_name|
-		Then the response is successful
+		Then For given inputs Lambda function output is as expected:
+			|world | "Hello world!"|
