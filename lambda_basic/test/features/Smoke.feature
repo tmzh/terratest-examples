@@ -7,3 +7,4 @@ Feature: Simple test to confirm lambda function behavior
 			|function_name | random_name|
 		Then For given inputs Lambda function output is as expected:
 			|world | "Hello world!"|
+		Then Cloudwatch log stream is generated
