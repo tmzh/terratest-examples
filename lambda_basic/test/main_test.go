@@ -12,7 +12,7 @@ type Payload struct {
 	Name string
 }
 
-func TestTerraformAwsLambdaFunction(t *testing.T) {
+func TestBasicLambdaFunction(t *testing.T) {
 	t.Parallel()
 
 	awsRegion := "us-east-1"
