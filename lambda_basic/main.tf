@@ -1,9 +1,12 @@
 terraform {
-  required_version = ">= 0.12.26"
-}
+  required_version = ">= 0.14.6"
 
-provider "archive" {
-  version = "1.3"
+  required_providers {
+    archive = {
+      source  = "hashicorp/archive"
+      version = "1.3"
+    }
+}
 }
 
 data "archive_file" "zip" {
@@ -39,35 +42,6 @@ data "aws_iam_policy_document" "policy" {
       identifiers = ["lambda.amazonaws.com"]
     }
   }
-}
-
-# See also the following AWS managed policy: AWSLambdaBasicExecutionRole
-resource "aws_iam_policy" "lambda_logging" {
-  name        = "lambda_logging"
-  path        = "/"
-  description = "IAM policy for logging from a lambda"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:*:*:*",
-      "Effect": "Allow"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_logs" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.lambda_logging.arn
 }
 
 output "lambda_function" {
